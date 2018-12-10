@@ -4,3 +4,5 @@
 ## Description
 ---
 A Webview GoLang GUI template for building cross-platform desktop utilities
+
+Based on https://github.com/zserge/webview
