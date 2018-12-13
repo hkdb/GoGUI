@@ -1,6 +1,17 @@
+// PROJECT: GoGUI
+//
+// VERSION: v0.1.0
+//
+// MAINTAINED BY: hkdb <hkdb@3df.io>
+//
+// SPONSORED BY: 3DF OSI - https://osi.3df.io
+//
+// This application is maintained by volunteers and in no way
+// do the maintainers make any guarantees. Use at your own risk.
 package main
 
 import (
+	"fmt"
 	"log"
 	"net"
 	"net/http"
@@ -24,7 +35,7 @@ var indexHTML = `
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	</head>
 	<body>
-		<center><img src = "3DFosi.png"></center>
+		<center><img src = "assets/3DFosi.png"></center>
 		<button onclick="external.invoke('close')">Close</button>
 		<button onclick="external.invoke('fullscreen')">Fullscreen</button>
 		<button onclick="external.invoke('unfullscreen')">Unfullscreen</button>
@@ -117,6 +128,11 @@ func handleRPC(w webview.WebView, data string) {
 }
 
 func main() {
+	data, err := Asset("assets/3DFosi.png")
+	if err != nil {
+		fmt.Println("No File Found!") // Asset was not found.
+	}
+
 	url := startServer()
 	w := webview.New(webview.Settings{
 		Width:     windowWidth,
@@ -126,7 +142,7 @@ func main() {
 		URL:       url,
 		ExternalInvokeCallback: handleRPC,
 	})
-	w.SetColor(100, 100, 100, 1)
+	w.SetColor(100, 100, 100, 255)
 	defer w.Exit()
 	w.Run()
 }
