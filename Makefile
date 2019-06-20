@@ -1,7 +1,5 @@
 ### PROJECT: GoGUI
 ###
-### VERSION: v0.1.0
-###
 ### MAINTAINED BY: hkdb <hkdb@3df.io>
 ###
 ### SPONSORED BY: 3DF OSI - https://osi.3df.io

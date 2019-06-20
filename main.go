@@ -1,7 +1,5 @@
 // PROJECT: GoGUI
 //
-// VERSION: v0.1.0
-//
 // MAINTAINED BY: hkdb <hkdb@3df.io>
 //
 // SPONSORED BY: 3DF OSI - https://osi.3df.io
@@ -11,21 +9,27 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"net"
 	"net/http"
 	"strconv"
 	"strings"
 
+	"github.com/skratchdot/open-golang/open"
 	"github.com/zserge/webview"
+
+	b64 "encoding/base64"
 )
 
 const (
 	windowWidth  = 400
 	windowHeight = 600
 	title        = "3DF GoGUI"
+	version      = "v0.01"
 )
+
+// Load Logo
+var logo = MustAsset("assets/3DFosi.png")
 
 var indexHTML = `
 <!doctype html>
@@ -33,9 +37,23 @@ var indexHTML = `
 	<head>
 		<title>3DF GoGUI</title>
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<script type="text/javascript">
+			function openURL()
+			{
+				var shell = new ActiveXObject("WScript.Shell");
+				shell.run("http://www.google.com");
+			}
+		</script>
 	</head>
+	
 	<body>
-		<center><img src = "assets/3DFosi.png"></center>
+		<br>
+		<center><img src="data:image/png;base64, ` + string(b64.StdEncoding.EncodeToString([]byte(logo))) + `"></center>
+		<br>
+		<center><font face="Roboto" color="white" size=2>An <a href="" oneclick="openURL()">OSI</a> application sponsored by <a href="/" oneclick="external.invoke('open3DF')">3DF</a></font></center>
+		<center><font face="Roboto" color="white" size=2>` + version + `</font></center>
+		<br>
+		<br>
 		<button onclick="external.invoke('close')">Close</button>
 		<button onclick="external.invoke('fullscreen')">Fullscreen</button>
 		<button onclick="external.invoke('unfullscreen')">Unfullscreen</button>
@@ -53,7 +71,7 @@ var indexHTML = `
 		<button onclick="external.invoke('changeColor:'+document.getElementById('new-color').value)">
 			Change color
 		</button>
-		<input id="new-color" value="#e91e63" type="color" />
+		<input id="new-color" value="#38393b" type="color" />
 	</body>
 </html>
 `
@@ -65,9 +83,11 @@ func startServer() string {
 	}
 	go func() {
 		defer ln.Close()
+
 		http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 			w.Write([]byte(indexHTML))
 		})
+
 		log.Fatal(http.Serve(ln, nil))
 	}()
 	return "http://" + ln.Addr().String()
@@ -75,6 +95,10 @@ func startServer() string {
 
 func handleRPC(w webview.WebView, data string) {
 	switch {
+	case data == "openOSI":
+		open.Start("https://osi.3df.io")
+	case data == "open3DF":
+		open.Run("https://3df.io")
 	case data == "close":
 		w.Terminate()
 	case data == "fullscreen":
@@ -128,12 +152,9 @@ func handleRPC(w webview.WebView, data string) {
 }
 
 func main() {
-	data, err := Asset("assets/3DFosi.png")
-	if err != nil {
-		fmt.Println("No File Found!") // Asset was not found.
-	}
 
 	url := startServer()
+
 	w := webview.New(webview.Settings{
 		Width:     windowWidth,
 		Height:    windowHeight,
@@ -142,7 +163,8 @@ func main() {
 		URL:       url,
 		ExternalInvokeCallback: handleRPC,
 	})
-	w.SetColor(100, 100, 100, 255)
+
+	w.SetColor(77, 77, 77, 255)
 	defer w.Exit()
 	w.Run()
 }
