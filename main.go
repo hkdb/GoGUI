@@ -17,7 +17,6 @@ import (
 	"strings"
 
 	"github.com/skratchdot/open-golang/open"
-
 	"github.com/zserge/webview"
 
 	b64 "encoding/base64"
@@ -48,25 +47,32 @@ var indexHTML = `
 		<center><font face="Roboto" color="white" size=2>An <a href="javascript:external.invoke('openosi')">OSI</a> application sponsored by <a href="javascript:external.invoke('open3df')">3DF</a></font></center>
 		<center><font face="Roboto" color="white" size=2>` + version + `</font></center>
 		<br>
+		<hr size=1>
+
 		<br>
-		<button onclick="external.invoke('close')">Close</button>
-		<button onclick="external.invoke('fullscreen')">Fullscreen</button>
-		<button onclick="external.invoke('unfullscreen')">Unfullscreen</button>
-		<button onclick="external.invoke('open')">Open</button>
+		<center>
+		<p><button onclick="external.invoke('open')">Open</button>
 		<button onclick="external.invoke('opendir')">Open directory</button>
 		<button onclick="external.invoke('save')">Save</button>
-		<button onclick="external.invoke('message')">Message</button>
+		<p><button onclick="external.invoke('message')">Message</button>
 		<button onclick="external.invoke('info')">Info</button>
 		<button onclick="external.invoke('warning')">Warning</button>
 		<button onclick="external.invoke('error')">Error</button>
-		<button onclick="external.invoke('changeTitle:'+document.getElementById('new-title').value)">
-			Change title
-		</button>
-		<input id="new-title" type="text" />
-		<button onclick="external.invoke('changeColor:'+document.getElementById('new-color').value)">
-			Change color
-		</button>
-		<input id="new-color" value="#38393b" type="color" />
+		<p><button onclick="external.invoke('submit')">Submit</button>
+		</center>
+		
+		
+		<div id="footer-line" style="position: relative">
+			<hr size=1 valign="bottom">
+		</div>
+		<div id="footer" style="position: relative">
+			<p style="position: fixed; bottom: 0; width:100%; text-align: center">
+				<button onclick="external.invoke('fullscreen')">Fullscreen</button>
+				<button onclick="external.invoke('unfullscreen')">Unfullscreen</button>
+				<button onclick="external.invoke('about')">About</button>
+				<button onclick="external.invoke('close')">Close</button>
+			</p>
+		</div>
 	</body>
 </html>
 `
@@ -110,6 +116,8 @@ func handleRPC(w webview.WebView, data string) {
 		w.Dialog(webview.DialogTypeAlert, 0, "Hello", "Hello, world!")
 	case data == "info":
 		w.Dialog(webview.DialogTypeAlert, webview.DialogFlagInfo, "Hello", "Hello, info!")
+	case data == "about":
+		w.Dialog(webview.DialogTypeAlert, webview.DialogFlagInfo, "About", "An <a href=\"javascript:external.invoke(\"https://osi.3df.io\")\" \"title=\"OSI @ 3DF\">OSI</a> application sponsored by <a href=\"https://www.3df.com.hk\"\" \"title=\"3DF Ltd.\">3DF</a>\"")
 	case data == "warning":
 		w.Dialog(webview.DialogTypeAlert, webview.DialogFlagWarning, "Hello", "Hello, warning!")
 	case data == "error":
@@ -143,6 +151,8 @@ func handleRPC(w webview.WebView, data string) {
 			w.SetColor(r, g, b, a)
 			return
 		}
+	case data == "submit":
+
 	}
 }
 
