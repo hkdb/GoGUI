@@ -22,12 +22,19 @@ v0.01 - Initial Release - https://github.com/hkdb/GoGUI/tree/v0.01
 ## Before Building:
 
 1. Install GoLang
-2. Install the following libraries:
+2. Install the following:
    ```
    go get -u github.com/zserge/webview/...
    go get -u github.com/jteeuwen/go-bindata/...
    go get -u github.com/skratchdot/open-golang/...
    ```
+
+    Windows Only:
+
+    To build app with icon, add the following:
+    ```
+    go get -u github.com/akavel/rsrc
+    ```
 
 ## Build & Launch:
 
