@@ -9,6 +9,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net"
 	"net/http"
@@ -16,6 +17,7 @@ import (
 	"strings"
 
 	"github.com/skratchdot/open-golang/open"
+
 	"github.com/zserge/webview"
 
 	b64 "encoding/base64"
@@ -37,20 +39,13 @@ var indexHTML = `
 	<head>
 		<title>3DF GoGUI</title>
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
-		<script type="text/javascript">
-			function openURL()
-			{
-				var shell = new ActiveXObject("WScript.Shell");
-				shell.run("http://www.google.com");
-			}
-		</script>
 	</head>
 	
 	<body>
 		<br>
 		<center><img src="data:image/png;base64, ` + string(b64.StdEncoding.EncodeToString([]byte(logo))) + `"></center>
 		<br>
-		<center><font face="Roboto" color="white" size=2>An <a href="" oneclick="openURL()">OSI</a> application sponsored by <a href="/" oneclick="external.invoke('open3DF')">3DF</a></font></center>
+		<center><font face="Roboto" color="white" size=2>An <a href="javascript:external.invoke('openosi')">OSI</a> application sponsored by <a href="javascript:external.invoke('open3df')">3DF</a></font></center>
 		<center><font face="Roboto" color="white" size=2>` + version + `</font></center>
 		<br>
 		<br>
@@ -95,10 +90,10 @@ func startServer() string {
 
 func handleRPC(w webview.WebView, data string) {
 	switch {
-	case data == "openOSI":
-		open.Start("https://osi.3df.io")
-	case data == "open3DF":
-		open.Run("https://3df.io")
+	case data == "openosi":
+		openl("https://osi.3df.io")
+	case data == "open3df":
+		openl("https://3df.io")
 	case data == "close":
 		w.Terminate()
 	case data == "fullscreen":
@@ -151,9 +146,18 @@ func handleRPC(w webview.WebView, data string) {
 	}
 }
 
+//Helper for Opening URL with Default Browser
+func openl(uri string) {
+	err := open.Run(uri)
+	fmt.Println(err)
+
+}
+
 func main() {
 
 	url := startServer()
+
+	webview.Debug()
 
 	w := webview.New(webview.Settings{
 		Width:     windowWidth,
