@@ -13,6 +13,7 @@ import (
 	"log"
 	"net"
 	"net/http"
+	"os/exec"
 	"strconv"
 	"strings"
 
@@ -40,7 +41,7 @@ var indexHTML = `
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	</head>
 	
-	<body>
+	<body bgcolor="#4D4D4D">
 		<br>
 		<center><img src="data:image/png;base64, ` + string(b64.StdEncoding.EncodeToString([]byte(logo))) + `"></center>
 		<br>
@@ -51,13 +52,19 @@ var indexHTML = `
 
 		<br>
 		<center>
+		<div style="border: 1px"><input type="file" id="infile" name="infile"></div>
 		<p><button onclick="external.invoke('open')">Open</button>
-		<button onclick="external.invoke('opendir')">Open directory</button>
+		<button onclick="external.invoke('opendir')">Open Directory</button>
 		<button onclick="external.invoke('save')">Save</button>
 		<p><button onclick="external.invoke('message')">Message</button>
 		<button onclick="external.invoke('info')">Info</button>
 		<button onclick="external.invoke('warning')">Warning</button>
 		<button onclick="external.invoke('error')">Error</button>
+		<p><button onclick="external.invoke('changeTitle:'+document.getElementById('new-title').value)">
+    		Change title
+		</button>
+		<input id="new-title" type="text" />
+		</p>
 		<p><button onclick="external.invoke('submit')">Submit</button>
 		</center>
 		
@@ -117,7 +124,7 @@ func handleRPC(w webview.WebView, data string) {
 	case data == "info":
 		w.Dialog(webview.DialogTypeAlert, webview.DialogFlagInfo, "Hello", "Hello, info!")
 	case data == "about":
-		w.Dialog(webview.DialogTypeAlert, webview.DialogFlagInfo, "About", "An <a href=\"javascript:external.invoke(\"https://osi.3df.io\")\" \"title=\"OSI @ 3DF\">OSI</a> application sponsored by <a href=\"https://www.3df.com.hk\"\" \"title=\"3DF Ltd.\">3DF</a>\"")
+		w.Dialog(webview.DialogTypeAlert, webview.DialogFlagInfo, "About", "\nAn OSI application sponsored by 3DF. For more information\n\nVisit:\n\nhttps://osi.3df.io")
 	case data == "warning":
 		w.Dialog(webview.DialogTypeAlert, webview.DialogFlagWarning, "Hello", "Hello, warning!")
 	case data == "error":
@@ -152,6 +159,7 @@ func handleRPC(w webview.WebView, data string) {
 			return
 		}
 	case data == "submit":
+		submit()
 
 	}
 }
@@ -163,11 +171,14 @@ func openl(uri string) {
 
 }
 
+func submit() {
+	cmd := exec.Command("echo", "Submitted")
+	fmt.Println(cmd)
+}
+
 func main() {
 
 	url := startServer()
-
-	webview.Debug()
 
 	w := webview.New(webview.Settings{
 		Width:     windowWidth,
